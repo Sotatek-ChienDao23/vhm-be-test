@@ -1,0 +1,26 @@
+version: '3.0'
+
+services:
+  postgresql-service:
+    container_name: postgresql-container
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=postgres
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+  translation-service:
+    container_name: translation-container
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgresql-container:5432/postgres
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=123456
+      - JVM_OPTS=-Xmx516M -Xms256M -XX:MaxPermSize=1024m
+    depends_on:
+      - postgresql-service
